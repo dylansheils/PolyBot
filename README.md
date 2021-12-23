@@ -19,7 +19,7 @@ PolyBot has the following dependencies:
   
   After installation, run "polyBotServerDriver.py" and modify the credentials in all source files to your respective Bot's associated credentials. This script will look for new emails every 10 seconds. Note, after an email is processed, it is deleted from the inbox of the account and a folder corresponding to the email with an HTML file is created. 
   
-  From the end-user perspective, one simply emails the PolyBot and recieves within 5-10 minutes an email of its analysis.
+  From the end-user perspective, one simply emails the PolyBot and recieves within 5-10 minutes a email of its analysis.
   
 Current Features:
   1) Basic Spelling Check
