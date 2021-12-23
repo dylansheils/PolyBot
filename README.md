@@ -17,7 +17,7 @@ PolyBot has the following dependencies:
  
   To install these dependencies, preform "pip install" followed by the packages name. Note, chrome driver requires an additional install which can be found when googling the applications name and Spacy requires an additional command to download the appropriate machine learning model.
   
-  After installation, run "polyBotServerDriver.py" and modified the credentials in all source files to your respective Bot's associated credentials. This script will look for new emails every 10 seconds. Note, after an email is processed, it is deleted from the inbox of the account and a folder corresponding to the email with an HTML file is created. 
+  After installation, run "polyBotServerDriver.py" and modify the credentials in all source files to your respective Bot's associated credentials. This script will look for new emails every 10 seconds. Note, after an email is processed, it is deleted from the inbox of the account and a folder corresponding to the email with an HTML file is created. 
   
   From the end-user perspective, one simply emails the PolyBot and recieves within 5-10 minutes an email of its analysis.
   
