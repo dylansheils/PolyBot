@@ -93,6 +93,8 @@ def numExist(inputString):
 actualNames = []
 years = []
 names = find_persons(stringToCheck)
+names = list(set(names))
+
 for x in names:
     if " " in x:
         InsertGradYear = True
@@ -113,8 +115,8 @@ for x in names:
 index = 0
 for x in actualNames:
     if years[index] == -1:
-        print("NOTE: Detected Graduate Student - " + x)
-        log += "NOTE: Detected Graduate Student - " + x + "\n"
+        print("NOTE: Detected Graduate? Student - " + x)
+        log += "NOTE: Detected Graduate? Student - " + x + "\n"
     else:
         print("NOTE: Detected Undergraduate Student - " + x + " Year: " + str(years[index]))
         log += "NOTE: Detected Undergraduate Student - " + x + " Year: " + str(years[index]) + "\n"
@@ -124,9 +126,12 @@ for x in actualNames:
 contextForNames = []
 for x in actualNames:
     leastIndex = stringToCheck.find(x)
-    endOfSentenceL = stringToCheck[leastIndex - 80:leastIndex].find(".") + leastIndex - 81
-    contextString = stringToCheck[endOfSentenceL + 3:leastIndex - 1]
-    contextString = contextString.lstrip(" ")
+    try:
+        endOfSentenceL = stringToCheck[leastIndex - 80:leastIndex].find(".") + leastIndex - 81
+        contextString = stringToCheck[endOfSentenceL + 3:leastIndex - 1 + 80]
+        contextString = contextString.lstrip(" ")
+    except:
+        contextString = ""
     contextForNames.append(contextString)
 
 index = 0
@@ -147,21 +152,13 @@ for x in actualNames:
     x += " Rensselaer linkedin"
     foundLinkedIn = False
     for j in search(x, tld="co.in", num=10, stop=10, pause=0):
-        if foundLinkedIn is False and "linkedin" in j:
+        if foundLinkedIn is False and "linkedin" in j and "linkedin.com/search/results/" not in j:
             linkedInProfiles.append(j)
             foundLinkedIn = True
     if not foundLinkedIn:
         print("Error (Automatic Fact Checking via LinkedIn Not Possible): " + x)
         log += "Error (Automatic Fact Checking via LinkedIn Not Possible): " + x + "\n"
         linkedInProfiles.append("-1")
-
-import pip
-
-def install(package):
-    if hasattr(pip, 'main'):
-        pip.main(['install', package])
-    else:
-        pip._internal.main(['install', package])
 
 from linkedin_scraper import Person, actions
 from selenium import webdriver
@@ -173,48 +170,59 @@ actions.login(driver, email, password)
 
 linkedInProfilesObj = []
 for x in linkedInProfiles:
-    linkedInProfilesObj.append(Person(x, driver=driver))
-    driver = webdriver.Chrome()
-    actions.login(driver, email, password)
+    if x == "-1":
+        linkedInProfilesObj.append("-1")
+    else:
+        try:
+            linkedInProfilesObj.append(Person(x, driver=driver))
+            driver = webdriver.Chrome()
+            actions.login(driver, email, password)
+        except:
+            linkedInProfilesObj.append("-1")
+            pass
 
 index = 0
 for x in linkedInProfilesObj:
-    if((x.name).replace(" ", "") != actualNames[index].replace(" ", "")):
-        print("LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name)
-        log += "LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name + "\n"
-    for l in x.educations:
-        combinationOfDescriptionAndDegree = ""
-        if(l.description != None):
-            combinationOfDescriptionAndDegree += l.description
-        if(l.degree != None):
-            combinationOfDescriptionAndDegree += l.degree
-        if(l.institution_name != None):
-            combinationOfDescriptionAndDegree += l.institution_name
+    if x == "-1":
+        print("LinkedIn Verification | No LinkedIn Profile(s): " + actualNames[index])
+        log += "LinkedIn Verification | No LinkedIn Profile(s): " + actualNames[index] + "\n"
+    else:
+        if((x.name).replace(" ", "") != actualNames[index].replace(" ", "")):
+            print("LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name)
+            log += "LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name + "\n"
+        for l in x.educations:
+            combinationOfDescriptionAndDegree = ""
+            if(l.description != None):
+                combinationOfDescriptionAndDegree += l.description
+            if(l.degree != None):
+                combinationOfDescriptionAndDegree += l.degree
+            if(l.institution_name != None):
+                combinationOfDescriptionAndDegree += l.institution_name
 
-        if years[index] != -1 and (str(years[index]) in l.to_date or "20" + str(years[index]) in l.to_date):
-            if "RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree:
-                print("LinkedIn Verification | Verified Undergraduate Student " + x.name)
-                log += "LinkedIn Verification | Verified Undergraduate Student " + x.name + "\n"
-        else:
-            if years[index] == -1:
-                if ("RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree) and ("PhD" in combinationOfDescriptionAndDegree or "Graduate" in combinationOfDescriptionAndDegree):
-                    print("LinkedIn Verification | Verified Graduate Student " + x.name)
+            if years[index] != -1 and (str(years[index]) in l.to_date or "20" + str(years[index]) in l.to_date):
+                if "RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree:
+                    print("LinkedIn Verification | Verified Undergraduate Student " + x.name)
                     log += "LinkedIn Verification | Verified Undergraduate Student " + x.name + "\n"
-    for j in x.experiences: # Note, this is a heuristic, cannot be FULLY trusted, but verifying positions is 2nd's job
-        totalString = ""
-        if(j.description != None):
-            totalString += j.description
-        if(j.position_title != None):
-            totalString += j.position_title
-        if(j.institution_name != None):
-            totalString += j.institution_name
-        possibleMatches = contextForNames[index].split(" ")
-        foundMatchYet = False
-        for m in possibleMatches:
-            if foundMatchYet != True and m in totalString:
-                print("LinkedIn Verification | Verified Claimed Position for " + x.name)
-                log += "LinkedIn Verification | Verified Claimed Position for " + x.name + "\n"
-                foundMatchYet = True
+            else:
+                if years[index] == -1:
+                    if ("RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree) and ("PhD" in combinationOfDescriptionAndDegree or "Graduate" in combinationOfDescriptionAndDegree):
+                        print("LinkedIn Verification | Verified Graduate Student " + x.name)
+                        log += "LinkedIn Verification | Verified Undergraduate Student " + x.name + "\n"
+        for j in x.experiences: # Note, this is a heuristic, cannot be FULLY trusted, but verifying positions is 2nd's job
+            totalString = ""
+            if(j.description != None):
+                totalString += j.description
+            if(j.position_title != None):
+                totalString += j.position_title
+            if(j.institution_name != None):
+                totalString += j.institution_name
+            possibleMatches = contextForNames[index].split(" ")
+            foundMatchYet = False
+            for m in possibleMatches:
+                if foundMatchYet != True and m in totalString:
+                    print("LinkedIn Verification | Verified Claimed Position for " + x.name)
+                    log += "LinkedIn Verification | Verified Claimed Position for " + x.name + "\n"
+                    foundMatchYet = True
     index += 1
 
 

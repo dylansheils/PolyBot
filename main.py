@@ -6,13 +6,6 @@ import os
 
 import pip
 
-def install(package):
-    if hasattr(pip, 'main'):
-        pip.main(['install', package])
-    else:
-        pip._internal.main(['install', package])
-
-install("autocorrect")
 # Pretend these are not outwardly visible...
 username = "thebest.polybot@gmail.com"
 password = "thePolyBot2000"
