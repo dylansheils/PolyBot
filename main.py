@@ -143,9 +143,9 @@ if(sender != ""):
     emailOfSender = emailOfSender.replace('<', '')
     emailOfSender = emailOfSender.replace('>', '')
 
-    # To delete emails...
+    # # To delete emails...
     status, messages = imap.search(None, "ALL")
-    # convert messages to a list of email IDs
+    # # convert messages to a list of email IDs
     messages = messages[0].split(b' ')
     for mail in messages:
         _, msg = imap.fetch(mail, "(RFC822)")
@@ -157,14 +157,14 @@ if(sender != ""):
                 # decode the email subject
                 subject = decode_header(msg["Subject"])[0][0]
                 if isinstance(subject, bytes):
-                    # if it's a bytes type, decode to str
-                    subject = subject.decode()
+                     # if it's a bytes type, decode to str
+                     subject = subject.decode()
         # mark the mail as deleted
         imap.store(mail, "+FLAGS", "\\Deleted")
-    #permanently remove mails that are marked as deleted
-    #from the selected mailbox (in this case, INBOX)
+     #permanently remove mails that are marked as deleted
+     #from the selected mailbox (in this case, INBOX)
     imap.expunge()
-    # close the connection and logout
+     # close the connection and logout
     imap.close()
     imap.logout()
 
