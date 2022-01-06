@@ -45,7 +45,7 @@ if folderName not in [pos for pos in os.listdir("./historicArticles/")
         os.mkdir("./historicArticles/" + folderName)
     except:
         pass
-    
+
 # Get all prior article names
 totalPath = "./historicArticles/" + folderName + "/"
 articles = [f for f in listdir(totalPath) if isfile(join(totalPath, f))]
@@ -201,9 +201,9 @@ avgArt, negArt, posArt, neuArt = getSentiments(input_source, 1)
 
 log += "\n\n\n"
 print("PolyBot | Sentiment Analysis, Article (comparison with general English writing): Positivity %: ", str(posArt * 100),
-      " Negativity %: ", str(negArt * 100), " Neutrality %: ", str(neuArt * 100), " Overall Sentiment (-1 [negative] - 1 [positive]): ", str(avgArt * 100))
+      " Negativity %: ", str(negArt * 100), " Neutrality %: ", str(neuArt * 100), " Overall Sentiment (-1 [negative] - 1 [positive]): ", str(avgArt))
 log += "PolyBot | Sentiment Analysis, Article (comparison with general English writing): Positivity %: " + str(posArt * 100) + \
-      " Negativity %: " + str(negArt * 100) + " Neutrality %: " + str(neuArt * 100) + " Overall Sentiment (-1 [negative] - 1 [positive]): " + str(avgArt * 100)
+      " Negativity %: " + str(negArt * 100) + " Neutrality %: " + str(neuArt * 100) + " Overall Sentiment (-1 [negative] - 1 [positive]): " + str(avgArt)
 print("PolyBot | Sentiment Analysis, Article (comparison with your historic Poly writing): Positivity Deviation %: " +
       str((pos - posArt) * 100) + " Negativity Deviation %: " +
       str((neg - negArt) * 100) + " Neutral Deviation %: " +
