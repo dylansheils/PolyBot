@@ -4,13 +4,33 @@ import sys
 import subprocess
 from subprocess import call
 import spacy
+import os
 import language_tool_python
 
-msg = (sys.argv[1]).split('#')
-name = sys.argv[2]
-sender = sys.argv[3]
-log = sys.argv[4]
-gramMsg = (sys.argv[5]).split('#')
+name = sys.argv[1]
+sender = sys.argv[2]
+log = sys.argv[3]
+
+import time
+time.sleep(.5)
+fileObj = open("tempParsed.txt", "r")
+msg = fileObj.read()
+msg = msg.split('#')
+fileObj.close()
+time.sleep(.5)
+os.remove("tempParsed.txt")
+time.sleep(.5)
+fileObj = open("tempGramParsed.txt", "r")
+gramMsg = fileObj.read()
+gramMsg = gramMsg.split('#')
+fileObj.close()
+time.sleep(.5)
+os.remove("tempGramParsed.txt")
+time.sleep(.5)
+
+
+# For ease of debugging
+skipLinkedIn = False
 
 # To not look like absolute idiots, some very basic RPI terminology we shouldn't mess up
 commonWordsToBeCorrected = ["RCOS", "Rensselaer", "Polytechnic", "administrative",
@@ -166,67 +186,70 @@ for x in actualNames:
 
 from linkedin_scraper import Person, actions
 from selenium import webdriver
-driver = webdriver.Chrome()
 
 email = "thebest.polybot@gmail.com"
 password = "thePolyBot2000"
-actions.login(driver, email, password)
 
-linkedInProfilesObj = []
-for x in linkedInProfiles:
-    if x == -1:
-        linkedInProfilesObj.append(-1)
-    else:
-        try:
-            linkedInProfilesObj.append(Person(x, driver=driver))
-            driver = webdriver.Chrome()
-            actions.login(driver, email, password)
-        except:
+# To ease debugging
+if skipLinkedIn == False:
+    driver = webdriver.Chrome()
+    actions.login(driver, email, password)
+
+    linkedInProfilesObj = []
+    for x in linkedInProfiles:
+        if x == -1:
             linkedInProfilesObj.append(-1)
-            pass
+        else:
+            try:
+                linkedInProfilesObj.append(Person(x, driver=driver))
+                driver = webdriver.Chrome()
+                actions.login(driver, email, password)
+            except:
+                linkedInProfilesObj.append(-1)
+                pass
 
-index = 0
-for x in linkedInProfilesObj:
-    if x == -1:
-        print("LinkedIn Verification | No LinkedIn Profile(s): " + actualNames[index])
-        log += "LinkedIn Verification | No LinkedIn Profile(s): " + actualNames[index] + "\n"
-    else:
-        if((x.name).replace(" ", "") != actualNames[index].replace(" ", "")):
-            print("LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name)
-            log += "LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name + "\n"
-        for l in x.educations:
-            combinationOfDescriptionAndDegree = ""
-            if(l.description != None):
-                combinationOfDescriptionAndDegree += l.description
-            if(l.degree != None):
-                combinationOfDescriptionAndDegree += l.degree
-            if(l.institution_name != None):
-                combinationOfDescriptionAndDegree += l.institution_name
+    index = 0
+    for x in linkedInProfilesObj:
+        if x == -1:
+            print("LinkedIn Verification | No LinkedIn Profile(s): " + actualNames[index])
+            log += "LinkedIn Verification | No LinkedIn Profile(s): " + actualNames[index] + "\n"
+        else:
+            if((x.name).replace(" ", "") != actualNames[index].replace(" ", "")):
+                print("LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name)
+                log += "LinkedIn Verification | Name Issue: " + actualNames[index] + "has closest match to " + x.name + "\n"
+            for l in x.educations:
+                combinationOfDescriptionAndDegree = ""
+                if(l.description != None):
+                    combinationOfDescriptionAndDegree += l.description
+                if(l.degree != None):
+                    combinationOfDescriptionAndDegree += l.degree
+                if(l.institution_name != None):
+                    combinationOfDescriptionAndDegree += l.institution_name
 
-            # Okay, potential issue if this thing runs for >70 years, but really?
-            if years[index] != -1 and (str(years[index]) in l.to_date or "20" + str(years[index]) in l.to_date):
-                if "RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree:
-                    print("LinkedIn Verification | Verified Undergraduate Student " + x.name)
-                    log += "LinkedIn Verification | Verified Undergraduate Student " + x.name + "\n"
-            else:
-                if years[index] == -1:
-                    if ("RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree) and ("PhD" in combinationOfDescriptionAndDegree or "Graduate" in combinationOfDescriptionAndDegree):
-                        print("LinkedIn Verification | Verified Graduate Student " + x.name)
+                # Okay, potential issue if this thing runs for >70 years, but really?
+                if years[index] != -1 and (str(years[index]) in l.to_date or "20" + str(years[index]) in l.to_date):
+                    if "RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree:
+                        print("LinkedIn Verification | Verified Undergraduate Student " + x.name)
                         log += "LinkedIn Verification | Verified Undergraduate Student " + x.name + "\n"
-        numMatches = 0
-        for j in x.experiences: # Note, this is a heuristic, cannot be FULLY trusted, but verifying positions is 2nd's job
-            totalString = ""
-            if(j.description != None):
-                totalString += j.description
-            if(j.position_title != None):
-                totalString += j.position_title
-            if(j.institution_name != None):
-                totalString += j.institution_name
-            possibleMatches = contextForNames[index].split(" ")
-            # Yes, this is horrible, yes I should strive to make something consecutive biased and multi-word, but
-            # titles are dynamic to context and possible positions. So, I though filtering out and using one matches
-            # would provide a good heurisitic
-            commonFilterWords = ["the", "at", "there", "some", "my", "of", "be", "use", "her", "him", "there", "than",
+                else:
+                    if years[index] == -1:
+                        if ("RPI" in combinationOfDescriptionAndDegree or "Rensselaer" in combinationOfDescriptionAndDegree) and ("PhD" in combinationOfDescriptionAndDegree or "Graduate" in combinationOfDescriptionAndDegree):
+                            print("LinkedIn Verification | Verified Graduate Student " + x.name)
+                            log += "LinkedIn Verification | Verified Undergraduate Student " + x.name + "\n"
+            numMatches = 0
+            for j in x.experiences: # Note, this is a heuristic, cannot be FULLY trusted, but verifying positions is 2nd's job
+                totalString = ""
+                if(j.description != None):
+                    totalString += j.description
+                if(j.position_title != None):
+                    totalString += j.position_title
+                if(j.institution_name != None):
+                    totalString += j.institution_name
+                possibleMatches = contextForNames[index].split(" ")
+                # Yes, this is horrible, yes I should strive to make something consecutive biased and multi-word, but
+                # titles are dynamic to context and possible positions. So, I though filtering out and using one matches
+                # would provide a good heurisitic
+                commonFilterWords = ["the", "at", "there", "some", "my", "of", "be", "use", "her", "him", "there", "than",
                                  "and", "this", "an", "would", "first", "a", "have", "each", "make", "to", "from",
                                  "which", "like", "been", "in", "or", "she", "call", "he", "is", "one", "do",
                                  "into", "who", "had", "you", "how", "time", "oil", "that", "by", "their", "has",
@@ -243,19 +266,22 @@ for x in linkedInProfilesObj:
                                  "will", "have", "one", "can", "should", "will", "within", "among", "the", "recently",
                                  "which", "but", "indefinitely", "been", "their", "what", "that", "despite", "this",
                                  "current", "within", "too", "two", "current", "currently", "with"]
-            foundMatchYet = False
-            for m in possibleMatches:
-                if foundMatchYet != True and m in totalString and m not in commonFilterWords:
-                    print("LinkedIn Verification | Verified Claimed Position for " + x.name)
-                    log += "LinkedIn Verification | Verified Claimed Position for " + x.name + "\n"
-                    foundMatchYet = True
-            else:
-                if m in totalString and m not in commonFilterWords:
-                    numMatches += 1
-        print("LinkedIn Verification | Claimed Position for " + x.name + " backed by " + str(numMatches) + " word matches")
-        log += "LinkedIn Verification | Claimed Position for " + x.name + " backed by " + str(numMatches) \
-               + " word matches" + "\n"
-    index += 1
+                foundMatchYet = False
+                for m in possibleMatches:
+                    if foundMatchYet != True and m in totalString and m not in commonFilterWords:
+                        print("LinkedIn Verification | Verified Claimed Position for " + x.name)
+                        log += "LinkedIn Verification | Verified Claimed Position for " + x.name + "\n"
+                        foundMatchYet = True
+                else:
+                    if m in totalString and m not in commonFilterWords:
+                        numMatches += 1
+            print("LinkedIn Verification | Claimed Position for " + x.name + " backed by " + str(numMatches + 1) + " word matches")
+            log += "LinkedIn Verification | Claimed Position for " + x.name + " backed by " + str(numMatches + 1) \
+                   + " word matches" + "\n"
+        index += 1
 
 # Call additional file to preform stylistic suggestion to author
-call(["python", "stylisticSuggestions.py", '#'.join(msg), name, sender, log, '#'.join(gramMsg)])
+with open("tempGramParsed.txt", 'w') as f:
+    f.write('#'.join(gramMsg))
+f.close()
+call(["python", "stylisticSuggestions.py", name, sender, log])
