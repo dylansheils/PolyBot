@@ -14,6 +14,11 @@ PolyBot has the following dependencies:
   8) LinkedIn Scrapper [LinkedInScraping]
   9) Selenium [LinkedInScraping]
   10) Yagmail [Sending E-Mails]
+  11) NLTK [Sentiment Analysis]
+  12) Vader Lexicon [Sentiment Analysis]
+  13) Punkt [Sentiment Analysis]
+  14) Markovify [Redundancy Analysis]
+  15) PySimilar [Redundancy Analysis]
  
   To install these dependencies, preform "pip install" followed by the packages name. Note, chrome driver requires an additional install which can be found when googling the applications name and Spacy requires an additional command to download the appropriate machine learning model.
   
@@ -28,11 +33,12 @@ Current Features:
   4) Name and Context Parsing
   5) LinkedIn Scraping and Credential Verification
   6) E-Mailing Interface
+  7) Sentiment Analysis using Markov Chain + Vader Lexicon
+  8) Redudancy Analysis using PySimilar's Cosine Statistic
 
 Upcoming Features:
-  1) Sentement Analysis
-  2) RPI Directory Scraping
-  3) Reference Counting
-  4) Modifiable Style Guide File
+  1) RPI Directory Scraping
+  2) Reference Counting
+  3) Modifiable Style Guide File
 
 To try it out, send an email WITH A SUBJECT to thebest.polybot@gmail.com
