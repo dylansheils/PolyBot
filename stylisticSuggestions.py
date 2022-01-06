@@ -81,22 +81,28 @@ log += "\n\n\n"
 fileOutputs = []
 for article in articles:
     if ".txt" in article:
+        fileObj = -1
         try:
             fileObj = open(totalPath + article, "r")
         except:
             fileObj = open(totalPath + article, encoding='utf-8')
             pass
-        articlesContent = fileObj.read()
-        fileOutputs.append(articlesContent)
-        # Read in all articles, put in up to 50% more weight on newer
-        models.append(markovify.Text(articlesContent, state_size=2))
-        worths.append(1 + (number/(2*len(articles))))
-        number += 1
-        fileObj.close()
-        comparison_result = compare(totalPath + articleName + "temp", totalPath + article)
-        if(comparison_result > .38):
-            print("PolyBot | Similarity Detection | Beginning Portion of Similar Article by you: ", articlesContent[:128])
-            log += "PolyBot | Similarity Detection | Beginning Portion of Similar Article by you: " + articlesContent[:128]
+        
+        if fileObj != -1:
+            articlesContent = fileObj.read()
+            fileOutputs.append(articlesContent)
+            # Read in all articles, put in up to 50% more weight on newer
+            models.append(markovify.Text(articlesContent, state_size=2))
+            worths.append(1 + (number/(2*len(articles))))
+            number += 1
+            fileObj.close()
+            comparison_result = compare(totalPath + articleName + "temp", totalPath + article)
+            if(comparison_result > .38):
+                print("PolyBot | Similarity Detection | Beginning Portion of Similar Article by you: ", articlesContent[:128])
+                log += "PolyBot | Similarity Detection | Beginning Portion of Similar Article by you: " + articlesContent[:128]
+        else:
+            print("ERROR: READING ", str(totalPath + article))
+            log += "PolyBot | Database Error | File: " + str(totalPath + article) + "\n\n"
 os.remove(totalPath + articleName + "temp")
 text_model = -1
 if len(models) > 0:
