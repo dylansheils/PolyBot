@@ -41,8 +41,11 @@ folderName = (str(name).strip()).replace(" ", "")
 articleName = folderName + "_art_" + str(timestr).strip() + ".txt"
 if folderName not in [pos for pos in os.listdir("./historicArticles/")
                                if os.path.isdir(os.path.join("./historicArticles/", pos))]:
-    os.mkdir("./historicArticles/" + folderName)
-
+    try:
+        os.mkdir("./historicArticles/" + folderName)
+    except:
+        pass
+    
 # Get all prior article names
 totalPath = "./historicArticles/" + folderName + "/"
 articles = [f for f in listdir(totalPath) if isfile(join(totalPath, f))]
@@ -121,30 +124,31 @@ top5LinesValue = [0, 0, 0, 0, 0]
 
 lineNum = 1
 for line in input_source:
-    generatedLine = ""
-    priorVal = 0
-    splicedInputString = line.split()
-    for i in range(len(splicedInputString)-2):
-        if text_model != -1 and len(splicedInputString) >= 2:
-            inputString = splicedInputString[i] + " " + splicedInputString[i+1]
-            generated = " "
-            try:
-                generated = str(text_model.make_sentence_with_start(inputString, False))
-            except:
+    if text_model != -1:
+        generatedLine = ""
+        priorVal = 0
+        splicedInputString = line.split()
+        for i in range(len(splicedInputString)-2):
+            if text_model != -1 and len(splicedInputString) >= 2:
+                inputString = splicedInputString[i] + " " + splicedInputString[i+1]
+                generated = " "
                 try:
-                    generated = str(text_model.make_sentence())
+                    generated = str(text_model.make_sentence_with_start(inputString, False))
                 except:
+                    try:
+                        generated = str(text_model.make_sentence())
+                    except:
+                        pass
                     pass
-                pass
-            totalDistance = ((fuzz.ratio(generated, line) + 10)/100)/2
-            replacedVal = False
-            for i in range(len(top5LinesValue)):
-                if(totalDistance > top5LinesValue[i] and totalDistance > .20 and not replacedVal):
-                    top5LinesValue[i] = totalDistance
-                    top5Generated[i] = generated
-                    top5Lines[i] = line
-                    replacedVal = True
-    lineNum += 1
+                totalDistance = ((fuzz.ratio(generated, line) + 10)/100)/2
+                replacedVal = False
+                for i in range(len(top5LinesValue)):
+                    if(totalDistance > top5LinesValue[i] and totalDistance > .20 and not replacedVal):
+                        top5LinesValue[i] = totalDistance
+                        top5Generated[i] = generated
+                        top5Lines[i] = line
+                        replacedVal = True
+        lineNum += 1
 
 for i in range(len(top5Lines)):
     if(top5Lines[i] != " "):
@@ -164,6 +168,8 @@ def checkMeaning(value, pos, line, samples):
             print("PolyBot | Reconsider Excessive Negativity for line: ", line)
             log += "PolyBot | Reconsider Excessive Negativity for line: " + line
 def getSentiments(sourceData, samplesInCollection):
+    if(samplesInCollection == 0):
+        return 0, 0, 0, 0
     averageSentiment = 0.00
     averageNegSentiment = 0.00
     averagePosSentiment = 0.00
@@ -201,11 +207,11 @@ log += "PolyBot | Sentiment Analysis, Article (comparison with general English w
 print("PolyBot | Sentiment Analysis, Article (comparison with your historic Poly writing): Positivity Deviation %: " +
       str((pos - posArt) * 100) + " Negativity Deviation %: " +
       str((neg - negArt) * 100) + " Neutral Deviation %: " +
-      str((neu - neuArt) * 100) + " In total Deviation %: " + str((avg - avgArt)/avg) * 100)
+      str((neu - neuArt) * 100) + " In total Deviation %: " + str(avg - avgArt) * 100)
 log += "PolyBot | Sentiment Analysis, Article (comparison with your historic Poly writing): Positivity Difference %: " + \
       str((pos - posArt) * 100) + " Negativity Difference %: " + \
       str((neg - negArt) * 100) + " Neutral Difference %: " + \
-      str((neu - neuArt) * 100) + " In total Difference %: " + str(((avg - avgArt)/avg)*100)
+      str((neu - neuArt) * 100) + " In total Difference %: " + str((avg - avgArt)*100)
 
 with open(totalPath + articleName, 'w') as f:
     f.write(storMessage)
