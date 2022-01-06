@@ -81,7 +81,11 @@ log += "\n\n\n"
 fileOutputs = []
 for article in articles:
     if ".txt" in article:
-        fileObj = open(totalPath + article, "r")
+        try:
+            fileObj = open(totalPath + article, "r")
+        except:
+            fileObj = open(totalPath + article, encoding='utf-8')
+            pass
         articlesContent = fileObj.read()
         fileOutputs.append(articlesContent)
         # Read in all articles, put in up to 50% more weight on newer
