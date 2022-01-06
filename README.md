@@ -33,8 +33,8 @@ Current Features:
   4) Name and Context Parsing
   5) LinkedIn Scraping and Credential Verification
   6) E-Mailing Interface
-  7) Sentiment Analysis using Markov Chain + Vader Lexicon
-  8) Redudancy Analysis using PySimilar's Cosine Statistic
+  7) Sentiment Analysis using Vader Lexicon
+  8) Redudancy Analysis using PySimilar's Cosine Statistic + Markov Chain
 
 Upcoming Features:
   1) RPI Directory Scraping
