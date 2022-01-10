@@ -30,7 +30,7 @@ time.sleep(.5)
 
 
 # For ease of debugging
-skipLinkedIn = False
+skipLinkedIn = True
 
 # To not look like absolute idiots, some very basic RPI terminology we shouldn't mess up
 commonWordsToBeCorrected = ["RCOS", "Rensselaer", "Polytechnic", "administrative",
@@ -284,4 +284,10 @@ if skipLinkedIn == False:
 with open("tempGramParsed.txt", 'w') as f:
     f.write('#'.join(gramMsg))
 f.close()
-call(["python", "stylisticSuggestions.py", name, sender, log])
+
+with open("tempLogParsed.txt", 'w', encoding="utf-8") as f:
+    f.write(str(log))
+f.close()
+
+
+call(["python", "stylisticSuggestions.py", name, sender])
