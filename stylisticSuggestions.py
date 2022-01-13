@@ -240,7 +240,7 @@ print("PolyBot | Sentiment Analysis, Article (comparison with general English wr
       " Negativity: ", str(negArt), " Neutrality: ", str(neuArt),
       " Overall Sentiment (-1 [negative] - 1 [positive]): ", str(avgArt))
 log += "PolyBot | Sentiment Analysis, Article (comparison with general English writing): Positivity: " + str(
-    posArt * 100) + \
+    posArt) + \
        " Negativity %: " + str(negArt) + " Neutrality: " + str(
     neuArt) + " Overall Sentiment (-1 [negative] - 1 [positive]): " + str(avgArt) + "\n"
 print("PolyBot | Sentiment Analysis, Article (comparison with your historic Poly writing): Positivity Deviation: " +

@@ -1,7 +1,11 @@
 from subprocess import call
 import time
-
-while(1 == 1):
-    time.sleep(5)
+import sched, time
+s = sched.scheduler(time.time, time.sleep)
+def do_something(sc):
+    print("Running...")
     call(["python", "main.py"])
-    time.sleep(5)
+    s.enter(10, 1, do_something, (sc,))
+
+s.enter(10, 1, do_something, (s,))
+s.run()

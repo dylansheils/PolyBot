@@ -30,7 +30,7 @@ time.sleep(.5)
 
 
 # For ease of debugging
-skipLinkedIn = True
+skipLinkedIn = False
 
 # To not look like absolute idiots, some very basic RPI terminology we shouldn't mess up
 commonWordsToBeCorrected = ["RCOS", "Rensselaer", "Polytechnic", "administrative",
