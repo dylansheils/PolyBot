@@ -42,5 +42,7 @@ Upcoming Features:
   1) RPI Directory Scraping
   2) Reference Counting
   3) Modifiable Style Guide File
+  4) Automatic Transcription
+  5) Sports Factchecker
 
 To try it out, send an email WITH A SUBJECT to thebest.polybot@gmail.com [NOT CURRENTLY WORKING, HAVE TO REBOOT SERVER]
