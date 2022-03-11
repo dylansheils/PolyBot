@@ -1,4 +1,6 @@
 # PolyBot
+keywords: Spellchecking, PolyBot, Polytechnic, Github, Grammar Checker, Style Guide, LinkedIn
+
 A tool to help the Poly copy-reading process! :D
 
   Let's face it-computers are better are repeatitive tasks. And, in spite of what one may want to believe, fact checking is, as a process, very repeatitive. Luckily, this leaves room for automation. This is the vision behind PolyBot. Although the idea sounds great in theory, I warn that one should view PolyBot as a mere tool for the Copy Reader. 
