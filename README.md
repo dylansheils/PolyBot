@@ -43,4 +43,4 @@ Upcoming Features:
   2) Reference Counting
   3) Modifiable Style Guide File
 
-To try it out, send an email WITH A SUBJECT to thebest.polybot@gmail.com
+To try it out, send an email WITH A SUBJECT to thebest.polybot@gmail.com [NOT CURRENTLY WORKING, HAVE TO REBOOT SERVER]
